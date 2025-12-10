@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Prihláška na Erasmus+ – Erasmus+ Hub{% endblock %}
+{% block body_class %}dashboard-body{% endblock %}
+
+{% block content %}
+<div class="dashboard-shell">
+    <aside class="dashboard-sidebar">
+        <div class="mb-4">
+            <div class="fw-semibold mb-1">Erasmus+ Študent</div>
+            <div class="small text-white-50">Vitajte vo vašom paneli</div>
+        </div>
+        <nav class="nav flex-column gap-1">
+            <a class="nav-link {% if active_tab == 'home' %}active{% endif %}" href="{{ url_for('student_dashboard', tab='home') }}">Hlavná stránka</a>
+            <a class="nav-link {% if active_tab == 'documents' %}active{% endif %}" href="{{ url_for('student_dashboard', tab='documents') }}">Dokumenty</a>
+            <a class="nav-link {% if active_tab == 'announcements' %}active{% endif %}" href="{{ url_for('student_announcements') }}">Oznámenia</a>
+            <a class="nav-link {% if active_tab == 'profile' %}active{% endif %}" href="{{ url_for('student_profile') }}">Profil</a>
+        </nav>
+    </aside>
+
+    <div class="dashboard-main">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+        <div class="card card-soft p-4 p-md-5">
+            <h1 class="h4 mb-3">Prihláška na Erasmus+ mobilitu</h1>
+            <p class="text-muted mb-4">
+                Nahrajte požadované prílohy k prihláške. Originály dôležitých dokumentov môžete
+                doručiť osobne na študijné oddelenie.
+            </p>
+
+            <div class="mb-4">
+                <div class="small text-muted mb-2">Postup podania</div>
+                <div class="progress" style="height: 10px;">
+                    <div class="progress-bar" role="progressbar" style="width: 25%;"></div>
+                </div>
+                <div class="d-flex justify-content-between small text-muted mt-1">
+                    <span>1. Vyplnenie údajov</span>
+                    <span>2. Nahratie dokumentov</span>
+                    <span>3. Kontrola</span>
+                    <span>4. Odoslanie</span>
+                </div>
+            </div>
+
+            <form method="post" enctype="multipart/form-data">
+                <div class="mb-4">
+                    <label class="form-label">Univerzita / krajina</label>
+                    <input type="text" name="destination" class="form-control" placeholder="napr. TUKE – Slovensko">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Typ mobility</label>
+                    <select name="mobility_type" class="form-select">
+                        <option value="Štúdium">Štúdium</option>
+                        <option value="Stáž">Stáž</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Požadované dokumenty</label>
+                    <ul class="list-group">
+                        {% for req in required_documents %}
+                            <li class="list-group-item">
+                                <div class="mb-1 fw-semibold">{{ req.label }}</div>
+                                <input class="form-control form-control-sm" type="file" name="doc_{{ req.key }}">
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="form-text mt-2">
+                        Podporované formáty: PDF, DOCX, JPG. Maximálna veľkosť každého súboru môže byť
+                        obmedzená podľa pravidiel univerzity.
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-gradient text-white fw-semibold">
+                    Nahrať dokumenty
+                </button>
+            </form>
+        </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+

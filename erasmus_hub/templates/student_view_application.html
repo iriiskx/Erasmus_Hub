@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Detail prihlášky – Erasmus+ Hub{% endblock %}
+{% block body_class %}dashboard-body{% endblock %}
+
+{% block content %}
+<div class="dashboard-shell">
+    <aside class="dashboard-sidebar">
+        <div class="mb-4">
+            <div class="fw-semibold mb-1">Erasmus+ Študent</div>
+            <div class="small text-white-50">Vitajte vo vašom paneli</div>
+        </div>
+        <nav class="nav flex-column gap-1">
+            <a class="nav-link {% if active_tab == 'home' %}active{% endif %}" href="{{ url_for('student_dashboard', tab='home') }}">Hlavná stránka</a>
+            <a class="nav-link {% if active_tab == 'documents' %}active{% endif %}" href="{{ url_for('student_dashboard', tab='documents') }}">Dokumenty</a>
+            <a class="nav-link {% if active_tab == 'announcements' %}active{% endif %}" href="{{ url_for('student_announcements') }}">Oznámenia</a>
+            <a class="nav-link {% if active_tab == 'profile' %}active{% endif %}" href="{{ url_for('student_profile') }}">Profil</a>
+        </nav>
+    </aside>
+
+    <div class="dashboard-main">
+        <div class="row">
+        <div class="col-lg-8">
+            <div class="card card-soft mb-3">
+                <div class="card-header bg-white">
+                    <span>Detail prihlášky</span>
+                </div>
+                <div class="card-body">
+                    <h5 class="mb-3">{{ application.university }}</h5>
+                    <p><strong>Typ mobility:</strong> {{ application.mobility_type }}</p>
+                    <p><strong>Dátum podania:</strong> {{ application.submitted_date }}</p>
+                    <p><strong>Stav:</strong> 
+                        <span class="badge {% if application.status == 'Schválená' %}bg-success{% elif application.status == 'Zamietnutá' %}bg-danger{% else %}bg-warning{% endif %}">
+                            {{ application.status }}
+                        </span>
+                    </p>
+                    {% if application.get('approved_at') %}
+                        <p class="text-success"><strong>✓ Schválené:</strong> {{ application.approved_at }}</p>
+                    {% endif %}
+                    {% if application.get('rejected_at') %}
+                        <p class="text-danger"><strong>✗ Zamietnuté:</strong> {{ application.rejected_at }}</p>
+                        {% if application.get('rejection_reason') %}
+                            <div class="alert alert-danger mt-2">
+                                <strong>Dôvod zamietnutia:</strong><br>
+                                {{ application.rejection_reason }}
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card card-soft mb-3">
+                <div class="card-header bg-white">Dokumenty</div>
+                <div class="card-body">
+                    {% for req in required_documents %}
+                        {% set doc = application.documents|selectattr('document_key', 'equalto', req.key)|first %}
+                        <div class="mb-3 p-3 border rounded">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="fw-semibold">{{ req.label }}</div>
+                                    {% if doc %}
+                                        <div class="small mt-1">
+                                            <a href="{{ url_for('download_file', filename=doc.filename) }}" class="text-decoration-none">
+                                                📄 {{ doc.filename }}
+                                            </a>
+                                        </div>
+                                        <div class="mt-2">
+                                            <span class="badge {% if doc.status == 'Schválený' %}bg-success{% elif doc.status == 'Zamietnutý' %}bg-danger{% elif doc.status == 'V preverovaní' %}bg-warning{% else %}bg-info{% endif %}">
+                                                {{ doc.status }}
+                                            </span>
+                                        </div>
+                                    {% else %}
+                                        <div class="small text-danger mt-1">✗ Nie je nahrané</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card card-soft mb-3">
+                <div class="card-header bg-white">Komentáre od administrátora</div>
+                <div class="card-body">
+                    {% if application.get('comments') and application.comments|length > 0 %}
+                        {% for comment in application.comments %}
+                        <div class="mb-3 p-3 border rounded bg-light">
+                            <div class="fw-semibold small">{{ comment.author_name }}</div>
+                            <div class="text-muted small">{{ comment.created_at }}</div>
+                            <div class="mt-2">{{ comment.comment_text }}</div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted mb-0">Zatiaľ žiadne komentáre od administrátora.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card card-soft mb-3">
+                <div class="card-header bg-white">Informácie</div>
+                <div class="card-body">
+                    <p class="small text-muted mb-2">
+                        <strong>Progres:</strong> {{ application.progress }}%
+                    </p>
+                    <div class="progress mb-3">
+                        <div class="progress-bar" role="progressbar" style="width: {{ application.progress }}%;"></div>
+                    </div>
+                    <p class="small text-muted mb-0">
+                        <strong>Dokumenty:</strong> {{ application.documents|length }}/{{ required_documents|length }}
+                    </p>
+                </div>
+            </div>
+            
+            {% if application.status == 'Podaná' %}
+            <div class="card card-soft">
+                <div class="card-header bg-white">Akcie</div>
+                <div class="card-body">
+                    <a href="{{ url_for('student_dashboard', tab='documents') }}" class="btn btn-primary w-100 mb-2">
+                        Upraviť dokumenty
+                    </a>
+                    <form method="post" action="{{ url_for('delete_application', app_id=application.id) }}">
+                        <button type="submit" class="btn btn-danger w-100" onclick="return confirm('Naozaj chcete zmazať túto prihlášku?')">
+                            Zmazať prihlášku
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Oznámenia – Erasmus+ Hub{% endblock %}
+{% block body_class %}dashboard-body{% endblock %}
+
+{% block content %}
+<div class="dashboard-shell">
+    <aside class="dashboard-sidebar">
+        <div class="mb-4">
+            <div class="fw-semibold mb-1">Erasmus+ Študent</div>
+            <div class="small text-white-50">Vitajte vo vašom paneli</div>
+        </div>
+        <nav class="nav flex-column gap-1">
+            <a class="nav-link {% if active_tab == 'home' %}active{% endif %}" href="{{ url_for('student_dashboard', tab='home') }}">Hlavná stránka</a>
+            <a class="nav-link {% if active_tab == 'documents' %}active{% endif %}" href="{{ url_for('student_dashboard', tab='documents') }}">Dokumenty</a>
+            <a class="nav-link {% if active_tab == 'announcements' %}active{% endif %}" href="{{ url_for('student_announcements') }}">Oznámenia</a>
+            <a class="nav-link {% if active_tab == 'profile' %}active{% endif %}" href="{{ url_for('student_profile') }}">Profil</a>
+        </nav>
+    </aside>
+
+    <div class="dashboard-main">
+        <div class="row">
+            <div class="col-lg-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h4 mb-0">Oznámenia</h1>
+            </div>
+
+            {% if announcements %}
+                {% for ann in announcements|reverse %}
+                <div class="card card-soft mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title mb-0">{{ ann.title }}</h5>
+                            {% if ann.priority == 'high' %}
+                                <span class="badge bg-danger">Vysoká priorita</span>
+                            {% elif ann.priority == 'normal' %}
+                                <span class="badge bg-warning">Normálna</span>
+                            {% else %}
+                                <span class="badge bg-info">Nízka</span>
+                            {% endif %}
+                        </div>
+                        <p class="text-muted small mb-2">{{ ann.created_at }} · {{ ann.author_name }}</p>
+                        <p class="card-text">{{ ann.content }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="card card-soft">
+                    <div class="card-body text-center">
+                        <p class="text-muted mb-0">Zatiaľ žiadne oznámenia.</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    </div>
+</div>
+{% endblock %}
+
+
+

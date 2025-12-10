@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Erasmus+ Hub – Prihlásenie/Registrácia{% endblock %}
+{% block body_class %}page-auth{% endblock %}
+
+{% block navbar %}
+{% endblock %}
+
+{% block main %}
+<main class="m-0 d-flex align-items-center justify-content-center" style="min-height: 100vh; width: 100%;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="position-absolute" style="top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; width: 90%; max-width: 520px;">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} mb-2">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}
+    <div class="w-100 d-flex justify-content-center align-items-center">
+        <div class="card auth-card p-4 p-md-5 text-center bg-white">
+            <div class="mb-3">
+                <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center"
+                     style="width:64px;height:64px;">
+                    🎓
+                </div>
+            </div>
+            <h1 class="h4 mb-2">Erasmus+ Hub</h1>
+            <p class="text-muted mb-4">
+                Vitajte v systéme správy programov Erasmus+. Prihláste sa alebo si vytvorte účet.
+            </p>
+
+            <div class="d-grid gap-2">
+                <a href="{{ url_for('login') }}" class="btn btn-gradient fw-semibold">
+                    Prihlásenie
+                </a>
+                <a href="{{ url_for('register') }}" class="btn btn-outline-light border-0 bg-white fw-semibold">
+                    Registrácia
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+</main>
+{% endblock %}
+
+
+

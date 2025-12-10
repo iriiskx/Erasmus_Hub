@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Detail prihlášky – Erasmus+ Hub{% endblock %}
+{% block body_class %}dashboard-body{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card card-soft mb-3">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <span>Detail prihlášky</span>
+                    <a href="{{ url_for('admin_panel', tab='applications') }}" class="btn btn-sm btn-outline-secondary">Späť na prihlášky</a>
+                </div>
+                <div class="card-body">
+                    <h5 class="mb-3">{{ application.student_name }}</h5>
+                    <p><strong>Email:</strong> {{ application.student_email }}</p>
+                    <p><strong>Univerzita:</strong> {{ application.university }}</p>
+                    <p><strong>Typ mobility:</strong> {{ application.mobility_type }}</p>
+                    <p><strong>Dátum podania:</strong> {{ application.submitted_date }}</p>
+                    <p><strong>Stav:</strong> 
+                        <span class="badge {% if application.status == 'Schválená' %}bg-success{% elif application.status == 'Zamietnutá' %}bg-danger{% else %}bg-warning{% endif %}">
+                            {{ application.status }}
+                        </span>
+                    </p>
+                    {% if application.get('approved_at') %}
+                        <p><strong>Schválené:</strong> {{ application.approved_at }}</p>
+                    {% endif %}
+                    {% if application.get('rejected_at') %}
+                        <p><strong>Zamietnuté:</strong> {{ application.rejected_at }}</p>
+                        {% if application.get('rejection_reason') %}
+                            <p><strong>Dôvod:</strong> {{ application.rejection_reason }}</p>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card card-soft mb-3">
+                <div class="card-header bg-white">Dokumenty</div>
+                <div class="card-body">
+                    {% for req in required_documents %}
+                        {% set doc = application.documents|selectattr('document_key', 'equalto', req.key)|first %}
+                        <div class="mb-3 p-3 border rounded">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="fw-semibold">{{ req.label }}</div>
+                                    {% if doc %}
+                                        <div class="small mt-1">
+                                            <a href="{{ url_for('download_file', filename=doc.filename) }}" class="text-decoration-none" target="_blank">
+                                                📄 {{ doc.filename }}
+                                            </a>
+                                        </div>
+                                        <div class="mt-2">
+                                            <form method="post" action="{{ url_for('update_document_status', doc_id=doc.id) }}" class="d-inline">
+                                                <select name="status" class="form-select form-select-sm d-inline-block" style="width: auto;" onchange="this.form.submit()">
+                                                    <option value="Odoslaný" {% if doc.status == 'Odoslaný' %}selected{% endif %}>Odoslaný</option>
+                                                    <option value="V preverovaní" {% if doc.status == 'V preverovaní' %}selected{% endif %}>V preverovaní</option>
+                                                    <option value="Schválený" {% if doc.status == 'Schválený' %}selected{% endif %}>Schválený</option>
+                                                    <option value="Zamietnutý" {% if doc.status == 'Zamietnutý' %}selected{% endif %}>Zamietnutý</option>
+                                                </select>
+                                            </form>
+                                        </div>
+                                    {% else %}
+                                        <div class="small text-danger mt-1">✗ Nie je nahrané</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card card-soft mb-3">
+                <div class="card-header bg-white">Komentáre</div>
+                <div class="card-body">
+                    {% if application.get('comments') %}
+                        {% for comment in application.comments %}
+                        <div class="mb-3 p-3 border rounded">
+                            <div class="fw-semibold small">{{ comment.author_name }}</div>
+                            <div class="text-muted small">{{ comment.created_at }}</div>
+                            <div class="mt-2">{{ comment.comment_text }}</div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">Zatiaľ žiadne komentáre.</p>
+                    {% endif %}
+                    
+                    <form method="post" action="{{ url_for('comment_application', app_id=application.id) }}" class="mt-3">
+                        <div class="mb-2">
+                            <textarea name="comment" class="form-control" rows="3" placeholder="Pridať komentár..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Pridať komentár</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card card-soft">
+                <div class="card-header bg-white">Akcie</div>
+                <div class="card-body">
+                    {% if application.status == 'Podaná' %}
+                    <form method="post" action="{{ url_for('approve_application', app_id=application.id) }}" class="mb-2">
+                        <button type="submit" class="btn btn-success w-100" onclick="return confirm('Naozaj chcete schváliť túto prihlášku?')">Schváliť prihlášku</button>
+                    </form>
+                    <form method="post" action="{{ url_for('reject_application', app_id=application.id) }}">
+                        <div class="mb-2">
+                            <textarea name="reason" class="form-control" rows="3" placeholder="Dôvod zamietnutia..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-danger w-100" onclick="return confirm('Naozaj chcete zamietnuť túto prihlášku?')">Zamietnuť prihlášku</button>
+                    </form>
+                    {% else %}
+                    <p class="text-muted small">Prihláška už bola {{ application.status|lower }}.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+{% endblock %}

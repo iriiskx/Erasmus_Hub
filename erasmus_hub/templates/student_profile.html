@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Profil – Erasmus+ Hub{% endblock %}
+{% block body_class %}dashboard-body{% endblock %}
+
+{% block content %}
+<div class="dashboard-shell">
+    <aside class="dashboard-sidebar">
+        <div class="mb-4">
+            <div class="fw-semibold mb-1">Erasmus+ Študent</div>
+            <div class="small text-white-50">Vitajte vo vašom paneli</div>
+        </div>
+        <nav class="nav flex-column gap-1">
+            <a class="nav-link {% if active_tab == 'home' %}active{% endif %}" href="{{ url_for('student_dashboard', tab='home') }}">Hlavná stránka</a>
+            <a class="nav-link {% if active_tab == 'documents' %}active{% endif %}" href="{{ url_for('student_dashboard', tab='documents') }}">Dokumenty</a>
+            <a class="nav-link {% if active_tab == 'announcements' %}active{% endif %}" href="{{ url_for('student_announcements') }}">Oznámenia</a>
+            <a class="nav-link {% if active_tab == 'profile' %}active{% endif %}" href="{{ url_for('student_profile') }}">Profil</a>
+        </nav>
+    </aside>
+
+    <div class="dashboard-main">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h4 mb-0">Môj profil</h1>
+            </div>
+
+            <div class="card card-soft mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Osobné údaje</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Meno a priezvisko</label>
+                            <input type="text" name="name" class="form-control" value="{{ user_data.name }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">E‑mail</label>
+                            <input type="email" class="form-control" value="{{ user_data.email }}" disabled>
+                            <div class="form-text">E‑mail nie je možné zmeniť.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Fakulta / študijný program</label>
+                            <input type="text" name="faculty" class="form-control" value="{{ user_data.faculty or '' }}">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Uložiť zmeny</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card card-soft">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Zmena hesla</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Aktuálne heslo</label>
+                            <input type="password" name="current_password" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nové heslo</label>
+                            <input type="password" name="new_password" class="form-control" minlength="4">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Potvrdenie nového hesla</label>
+                            <input type="password" name="confirm_password" class="form-control" minlength="4">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Zmeniť heslo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+

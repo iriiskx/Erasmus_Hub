@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Aktualizovať dokumenty – Erasmus+ Hub{% endblock %}
+{% block body_class %}dashboard-body{% endblock %}
+
+{% block content %}
+<div class="dashboard-shell">
+    <aside class="dashboard-sidebar">
+        <div class="mb-4">
+            <div class="fw-semibold mb-1">Erasmus+ Študent</div>
+            <div class="small text-white-50">Vitajte vo vašom paneli</div>
+        </div>
+        <nav class="nav flex-column gap-1">
+            <a class="nav-link {% if active_tab == 'home' %}active{% endif %}" href="{{ url_for('student_dashboard', tab='home') }}">Hlavná stránka</a>
+            <a class="nav-link {% if active_tab == 'documents' %}active{% endif %}" href="{{ url_for('student_dashboard', tab='documents') }}">Dokumenty</a>
+            <a class="nav-link {% if active_tab == 'announcements' %}active{% endif %}" href="{{ url_for('student_announcements') }}">Oznámenia</a>
+            <a class="nav-link {% if active_tab == 'profile' %}active{% endif %}" href="{{ url_for('student_profile') }}">Profil</a>
+        </nav>
+    </aside>
+
+    <div class="dashboard-main">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h4 mb-0">Aktualizovať dokumenty</h1>
+            </div>
+
+            <div class="card card-soft mb-3">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Prihláška: {{ application.university }}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">
+                        Môžete nahrať нові версії документів або додати відсутні. Старі файли budú nahradené.
+                    </p>
+
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Dokumenty</label>
+                            <div class="row g-3">
+                                {% for req in required_documents %}
+                                    {% set doc = application.documents|selectattr('document_key', 'equalto', req.key)|first %}
+                                    <div class="col-md-6">
+                                        <div class="border rounded p-3 {% if doc %}bg-light{% endif %}">
+                                            <div class="fw-semibold mb-2">{{ req.label }}</div>
+                                            {% if doc %}
+                                                <div class="small text-muted mb-2">
+                                                    Aktuálny súbor: {{ doc.filename }}
+                                                    <br>
+                                                    <span class="badge {% if doc.status == 'Schválený' %}bg-success{% elif doc.status == 'Zamietnutý' %}bg-danger{% else %}bg-warning{% endif %}">
+                                                        {{ doc.status }}
+                                                    </span>
+                                                </div>
+                                            {% else %}
+                                                <div class="small text-danger mb-2">Nie je nahrané</div>
+                                            {% endif %}
+                                            <input type="file" name="doc_{{ req.key }}" class="form-control form-control-sm" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="form-text mt-3">
+                                Podporované formáty: PDF, DOCX, JPG, PNG. Maximálna veľkosť: 16 MB.
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">Uložiť dokumenty</button>
+                            <a href="{{ url_for('student_view_application', app_id=application.id) }}" class="btn btn-outline-secondary">Zrušiť</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+{% endblock %}
+
+
+

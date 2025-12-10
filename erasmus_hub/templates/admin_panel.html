@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+
+{% block title %}Administračný panel – Erasmus+ Hub{% endblock %}
+{% block body_class %}dashboard-body{% endblock %}
+
+{% block content %}
+<div class="dashboard-shell">
+    <aside class="dashboard-sidebar">
+        <div class="mb-4">
+            <div class="fw-semibold mb-1">Erasmus+ Panel</div>
+            <div class="small text-white-50">Správa študentov a prihlášok</div>
+        </div>
+        <nav class="nav flex-column gap-1">
+            <a class="nav-link {% if active_tab == 'home' %}active{% endif %}"
+               href="{{ url_for('admin_panel', tab='home') }}">Hlavná stránka</a>
+            <a class="nav-link {% if active_tab == 'applications' %}active{% endif %}"
+               href="{{ url_for('admin_panel', tab='applications') }}">Prihlášky</a>
+            <a class="nav-link {% if active_tab == 'students' %}active{% endif %}"
+               href="{{ url_for('admin_panel', tab='students') }}">Študenti</a>
+            <a class="nav-link {% if active_tab == 'documents' %}active{% endif %}"
+               href="{{ url_for('admin_panel', tab='documents') }}">Dokumenty</a>
+            <a class="nav-link {% if active_tab == 'announcements' %}active{% endif %}"
+               href="{{ url_for('admin_panel', tab='announcements') }}">Oznámenia</a>
+            <a class="nav-link {% if active_tab == 'statistics' %}active{% endif %}"
+               href="{{ url_for('admin_statistics') }}">Štatistiky</a>
+        </nav>
+    </aside>
+
+    <div class="dashboard-main">
+        <h1 class="h4 mb-3">Administračný panel</h1>
+        <p class="text-muted mb-4">
+            {% if active_tab == 'home' %}
+                Vitajte v administrácii Erasmus+ – prehľad prihlášok a dokumentov.
+            {% elif active_tab == 'applications' %}
+                Správa všetkých študentských prihlášok.
+            {% elif active_tab == 'students' %}
+                Zoznam študentov zapojených do Erasmus+ mobilít.
+            {% elif active_tab == 'documents' %}
+                Prehľad nahraných dokumentov a ich stavu.
+            {% else %}
+                Správa oznámení a termínov.
+            {% endif %}
+        </p>
+
+        <!-- ГОЛОВНА СТОРІНКА -->
+        {% if active_tab == 'home' %}
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card card-soft p-3">
+                    <div class="small text-muted">Celkovo študentov</div>
+                    <div class="h4 mb-0">{{ stats.students_total }}</div>
+                    <div class="small text-success">Aktívnych</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-soft p-3">
+                    <div class="small text-muted">Prihlášky na posúdenie</div>
+                    <div class="h4 mb-0">{{ stats.applications_pending }}</div>
+                    <div class="small text-warning">Potrebujú pozornosť</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-soft p-3">
+                    <div class="small text-muted">Schválené prihlášky</div>
+                    <div class="h4 mb-0">{{ stats.applications_approved }}</div>
+                    <div class="small text-success">Úspešné</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-soft p-3">
+                    <div class="small text-muted">Oznámenia</div>
+                    <div class="h4 mb-0">{{ stats.total_announcements }}</div>
+                    <div class="small text-success">Aktívne</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-lg-7">
+                <div class="card card-soft h-100">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <span>Posledné prihlášky</span>
+                        <a href="{{ url_for('admin_panel', tab='applications') }}" class="btn btn-sm btn-primary">Zobraziť všetky</a>
+                    </div>
+                    <div class="card-body">
+                        {% if latest_apps %}
+                            {% for app in latest_apps[:5] %}
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                                    <div>
+                                        <div class="fw-semibold">{{ app.student_name }}</div>
+                                        <div class="small text-muted">
+                                            {{ app.university }} · {{ app.mobility_type }} · {{ app.submitted_date }}
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <div>
+                                            <span class="badge {% if app.status == 'Schválená' %}bg-success{% elif app.status == 'Zamietnutá' %}bg-danger{% else %}bg-warning{% endif %}">
+                                                {{ app.status }}
+                                            </span>
+                                        </div>
+                                        <a href="{{ url_for('view_application', app_id=app.id) }}" class="btn btn-sm btn-outline-primary mt-1">Zobraziť</a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted mb-0 text-center">Zatiaľ žiadne prihlášky.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="card card-soft h-100">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <span>Posledné oznámenia</span>
+                        <a href="{{ url_for('admin_panel', tab='announcements') }}" class="btn btn-sm btn-primary">Všetky</a>
+                    </div>
+                    <div class="card-body">
+                        {% if latest_announcements %}
+                            {% for ann in latest_announcements %}
+                                <div class="mb-3 pb-3 border-bottom">
+                                    <div class="fw-semibold small">{{ ann.title }}</div>
+                                    <div class="text-muted small">{{ ann.created_at }}</div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted mb-0 small">Zatiaľ žiadne oznámenia.</p>
+                        {% endif %}
+                        <a href="{{ url_for('new_announcement') }}" class="btn btn-sm btn-outline-primary mt-2">Nové oznámenie</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- СТОРІНКА ЗАЯВОК -->
+        {% if active_tab == 'applications' %}
+        <div class="card card-soft mb-3">
+            <div class="card-header bg-white">
+                <form method="get" class="row g-2">
+                    <input type="hidden" name="tab" value="applications">
+                    {% if selected_student %}
+                    <input type="hidden" name="student" value="{{ selected_student }}">
+                    {% endif %}
+                    <div class="col-md-4">
+                        <input type="text" name="search" class="form-control form-control-sm" 
+                               placeholder="Hľadať podľa univerzity alebo mena..." value="{{ search_query or '' }}">
+                    </div>
+                    <div class="col-md-3">
+                        <select name="status" class="form-select form-select-sm">
+                            <option value="all" {% if status_filter == 'all' %}selected{% endif %}>Všetky</option>
+                            <option value="Podaná" {% if status_filter == 'Podaná' %}selected{% endif %}>Podaná</option>
+                            <option value="Schválená" {% if status_filter == 'Schválená' %}selected{% endif %}>Schválená</option>
+                            <option value="Zamietnutá" {% if status_filter == 'Zamietnutá' %}selected{% endif %}>Zamietnutá</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary btn-sm w-100">Filtrovať</button>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        {% if search_query or status_filter != 'all' %}
+                        <a href="{{ url_for('admin_panel', tab='applications') }}{% if selected_student %}?student={{ selected_student }}{% endif %}" class="btn btn-outline-secondary btn-sm">Zrušiť filter</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card card-soft">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <span>
+                    {% if selected_student %}
+                        Prihlášky študenta: 
+                        {% for student in all_students %}
+                            {% if student.email == selected_student %}
+                                {{ student.name }} ({{ student.email }})
+                            {% endif %}
+                        {% endfor %}
+                        ({{ all_applications|length }})
+                    {% else %}
+                        Všetky prihlášky ({{ all_applications|length }})
+                    {% endif %}
+                </span>
+                {% if selected_student %}
+                <a href="{{ url_for('admin_panel', tab='applications') }}" class="btn btn-sm btn-outline-secondary">Zobraziť všetky</a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if all_applications %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Študent</th>
+                                    <th>Univerzita</th>
+                                    <th>Typ</th>
+                                    <th>Dátum</th>
+                                    <th>Dokumenty</th>
+                                    <th>Stav</th>
+                                    <th>Akcie</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for app in all_applications %}
+                                <tr>
+                                    <td>{{ app.student_name }}</td>
+                                    <td>{{ app.university }}</td>
+                                    <td>{{ app.mobility_type }}</td>
+                                    <td>{{ app.submitted_date }}</td>
+                                    <td>{{ app.documents|length }}/{{ required_documents|length }}</td>
+                                    <td>
+                                        <span class="badge {% if app.status == 'Schválená' %}bg-success{% elif app.status == 'Zamietnutá' %}bg-danger{% else %}bg-warning{% endif %}">
+                                            {{ app.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('view_application', app_id=app.id) }}" class="btn btn-sm btn-outline-primary">Zobraziť</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0 text-center">Zatiaľ žiadne prihlášky.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- СТОРІНКА СТУДЕНТІВ -->
+        {% if active_tab == 'students' %}
+        <div class="card card-soft">
+            <div class="card-header bg-white">
+                <span>Zoznam študentov</span>
+            </div>
+            <div class="card-body">
+                {% if all_students %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Meno</th>
+                                    <th>Email</th>
+                                    <th>Fakulta</th>
+                                    <th>Počet prihlášok</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in all_students %}
+                                {% set student_apps = all_applications|selectattr('student_email', 'equalto', student.email)|list %}
+                                <tr>
+                                    <td>{{ student.name }}</td>
+                                    <td>{{ student.email }}</td>
+                                    <td>{{ student.get('faculty', 'Nezadané') }}</td>
+                                    <td>{{ student_apps|length }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0 text-center">Zatiaľ žiadni študenti.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- СТОРІНКА ДОКУМЕНТІВ -->
+        {% if active_tab == 'documents' %}
+        <div class="card card-soft">
+            <div class="card-header bg-white">
+                <span>Prehľad dokumentov</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Typ dokumentu</th>
+                                <th>Počet nahraných</th>
+                                <th>Študenti</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in required_documents %}
+                            {% set doc_count = 0 %}
+                            {% set students_with_doc = [] %}
+                            {% for app in all_applications %}
+                                {% for doc in app.documents %}
+                                    {% if doc.document_key == req.key %}
+                                        {% set doc_count = doc_count + 1 %}
+                                        {% if app.student_email not in students_with_doc %}
+                                            {% set _ = students_with_doc.append(app.student_email) %}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                            <tr>
+                                <td>{{ req.label }}</td>
+                                <td>{{ doc_count }}</td>
+                                <td>{{ students_with_doc|length }} študentov</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+
+        <!-- СТОРІНКА НОВИН -->
+        {% if active_tab == 'announcements' %}
+        <div class="card card-soft mb-3">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <span>Oznámenia</span>
+                <a href="{{ url_for('new_announcement') }}" class="btn btn-sm btn-outline-primary">Nové oznámenie</a>
+            </div>
+            <div class="card-body">
+                {% if all_announcements %}
+                    {% for ann in all_announcements|reverse %}
+                    <div class="mb-3 p-3 border rounded">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold">{{ ann.title }}</div>
+                                <div class="text-muted small mt-1">{{ ann.content }}</div>
+                                <div class="text-muted small mt-2">
+                                    {{ ann.created_at }} · {{ ann.author_name }}
+                                    {% if ann.priority == 'high' %}
+                                        <span class="badge bg-danger ms-2">Vysoká priorita</span>
+                                    {% elif ann.priority == 'normal' %}
+                                        <span class="badge bg-warning ms-2">Normálna</span>
+                                    {% else %}
+                                        <span class="badge bg-info ms-2">Nízka</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="ms-3">
+                                <a href="{{ url_for('edit_announcement', ann_id=ann.id) }}" class="btn btn-sm btn-outline-primary">Upraviť</a>
+                                <form method="post" action="{{ url_for('delete_announcement', ann_id=ann.id) }}" class="d-inline mt-1">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Naozaj chcete zmazať toto oznámenie?')">Zmazať</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted mb-0 text-center">Zatiaľ žiadne oznámenia.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+
+

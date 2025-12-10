@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Štatistiky – Erasmus+ Hub{% endblock %}
+{% block body_class %}dashboard-body{% endblock %}
+
+{% block content %}
+<div class="dashboard-shell">
+    <aside class="dashboard-sidebar">
+        <div class="mb-4">
+            <div class="fw-semibold mb-1">Erasmus+ Panel</div>
+            <div class="small text-white-50">Správa študentov a prihlášok</div>
+        </div>
+        <nav class="nav flex-column gap-1">
+            <a class="nav-link {% if active_tab == 'home' %}active{% endif %}" href="{{ url_for('admin_panel', tab='home') }}">Hlavná stránka</a>
+            <a class="nav-link {% if active_tab == 'applications' %}active{% endif %}" href="{{ url_for('admin_panel', tab='applications') }}">Prihlášky</a>
+            <a class="nav-link {% if active_tab == 'students' %}active{% endif %}" href="{{ url_for('admin_panel', tab='students') }}">Študenti</a>
+            <a class="nav-link {% if active_tab == 'documents' %}active{% endif %}" href="{{ url_for('admin_panel', tab='documents') }}">Dokumenty</a>
+            <a class="nav-link {% if active_tab == 'announcements' %}active{% endif %}" href="{{ url_for('admin_panel', tab='announcements') }}">Oznámenia</a>
+            <a class="nav-link {% if active_tab == 'statistics' %}active{% endif %}" href="{{ url_for('admin_statistics') }}">Štatistiky</a>
+        </nav>
+    </aside>
+
+    <div class="dashboard-main">
+        <h1 class="h4 mb-3">Štatistiky</h1>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card card-soft">
+                <div class="card-body">
+                    <div class="small text-muted">Celkovo prihlášok</div>
+                    <div class="h3 mb-0">{{ total_applications }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-soft">
+                <div class="card-body">
+                    <div class="small text-muted">Celkovo študentov</div>
+                    <div class="h3 mb-0">{{ total_students }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-soft">
+                <div class="card-body">
+                    <div class="small text-muted">Úspešnosť</div>
+                    <div class="h3 mb-0">
+                        {% if total_applications > 0 %}
+                            {{ ((applications_approved / total_applications) * 100)|round(1) }}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-6">
+            <div class="card card-soft">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Štatistiky podľa typu mobility</h5>
+                </div>
+                <div class="card-body">
+                    {% if mobility_stats %}
+                        <ul class="list-group">
+                            {% for mob_type, count in mobility_stats.items() %}
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>{{ mob_type }}</span>
+                                <span class="badge bg-primary">{{ count }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">Žiadne údaje.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card card-soft">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Nahrané dokumenty</h5>
+                </div>
+                <div class="card-body">
+                    {% if doc_stats %}
+                        <ul class="list-group">
+                            {% for doc_name, count in doc_stats.items() %}
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span class="small">{{ doc_name }}</span>
+                                <span class="badge bg-info">{{ count }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">Žiadne údaje.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if monthly_stats %}
+    <div class="card card-soft mt-3">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Štatistiky podľa mesiacov</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Mesiac</th>
+                            <th>Celkom</th>
+                            <th>Schválené</th>
+                            <th>Zamietnuté</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for month, stats in monthly_stats.items() %}
+                        <tr>
+                            <td>{{ month }}</td>
+                            <td>{{ stats.total }}</td>
+                            <td class="text-success">{{ stats.approved }}</td>
+                            <td class="text-danger">{{ stats.rejected }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+
+

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Prihlásenie – Erasmus+ Hub{% endblock %}
+{% block body_class %}page-auth{% endblock %}
+{% block navbar %}{% endblock %}
+
+{% block main %}
+<main class="m-0 d-flex align-items-center justify-content-center" style="min-height: 100vh; width: 100%;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="position-absolute" style="top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; width: 90%; max-width: 520px;">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} mb-2">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}
+    <div class="w-100 d-flex justify-content-center align-items-center">
+        <div class="card auth-card p-4 p-md-5">
+                <h1 class="h4 mb-2 text-center">Erasmus+ Hub</h1>
+                <p class="text-muted small mb-4 text-center">
+                    Prihláste sa do svojho účtu alebo pokračujte ako správca.
+                </p>
+                <ul class="nav nav-tabs mb-4 auth-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{{ url_for('login') }}">Prihlásenie</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('register') }}">Registrácia</a>
+                    </li>
+                </ul>
+
+                <form method="post" novalidate>
+                    <div class="mb-3">
+                        <label class="form-label">E‑mailová adresa</label>
+                        <input type="email" name="email" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Heslo</label>
+                        <input type="password" name="password" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label d-block">Prihlásiť sa ako</label>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="role" id="roleStudent" value="student" checked>
+                            <label class="btn btn-outline-primary" for="roleStudent">Študent</label>
+
+                            <input type="radio" class="btn-check" name="role" id="roleAdmin" value="admin">
+                            <label class="btn btn-outline-secondary" for="roleAdmin">Správca</label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">
+                                Zapamätať si ma
+                            </label>
+                        </div>
+                        <a href="#" class="small text-muted">Zabudli ste heslo?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-gradient w-100 fw-semibold">
+                        Prihlásiť sa
+                    </button>
+                </form>
+        </div>
+    </div>
+    {% endblock %}
+</main>
+{% endblock %}
+
+
+
