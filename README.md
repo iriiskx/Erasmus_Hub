@@ -1,8 +1,8 @@
-# 🎓 Erasmus+ Hub
+#  Erasmus+ Hub
 
 Plnofunkčná webová aplikácia pre správu programu Erasmus+ vyvinutá na Flask frameworku.
 
-## 📋 Obsah
+##  Obsah
 
 - [O projekte](#-o-projekte)
 - [Funkcie](#-funkcie)
@@ -13,13 +13,13 @@ Plnofunkčná webová aplikácia pre správu programu Erasmus+ vyvinutá na Flas
 - [API a smerovanie](#-api-a-smerovanie)
 - [Bezpečnosť](#-bezpečnosť)
 
-## 🎯 O projekte
+##  O projekte
 
 Erasmus+ Hub je komplexný systém pre správu študentských prihlášok na mobilitu v rámci programu Erasmus+. Aplikácia poskytuje plnohodnotné rozhranie pre študentov aj administrátorov s možnosťou správy prihlášok, dokumentov, oznámení a štatistík.
 
-## ✨ Funkcie
+##  Funkcie
 
-### 🔐 Autentifikácia a autorizácia
+###  Autentifikácia a autorizácia
 - ✅ Registrácia používateľov (študenti a administrátori)
 - ✅ Prihlásenie/Odhlásenie z systému
 - ✅ Rôzne úrovne prístupu (študent/admin)
@@ -27,7 +27,7 @@ Erasmus+ Hub je komplexný systém pre správu študentských prihlášok na mob
 - ✅ Hashovanie hesiel (Werkzeug PBKDF2)
 - ✅ Sessiónová autentifikácia s časovým limitom (24 hodín)
 
-### 👨‍🎓 Študentský panel
+###  Študentský panel
 - ✅ Vytváranie nových prihlášok na mobilitu
 - ✅ Nahrávanie dokumentov
 - ✅ Prehľad vlastných prihlášok
@@ -38,7 +38,7 @@ Erasmus+ Hub je komplexný systém pre správu študentských prihlášok na mob
 - ✅ Sťahovanie súborov
 - ✅ Prehľad komentárov administrátora
 
-### 👨‍💼 Administrátorský panel
+###  Administrátorský panel
 - ✅ Hlavná štatistická stránka
 - ✅ Správa prihlášok (prehľad, schválenie, zamietnutie)
 - ✅ Komentovanie prihlášok
@@ -49,7 +49,7 @@ Erasmus+ Hub je komplexný systém pre správu študentských prihlášok na mob
 - ✅ Vyhľadávanie a filtrovanie prihlášok
 - ✅ Filtrovanie podľa študenta, statusu a vyhľadávacieho dotazu
 
-### 💾 Databáza
+###  Databáza
 - ✅ SQLite databáza
 - ✅ Tabuľky: users, applications, documents, application_comments, messages, announcements
 - ✅ Automatická migrácia z JSON súborov
@@ -57,13 +57,13 @@ Erasmus+ Hub je komplexný systém pre správu študentských prihlášok na mob
 - ✅ Referenčná integrita (Foreign Keys)
 - ✅ Kaskádové mazanie
 
-### 📊 Štatistiky
+###  Štatistiky
 - ✅ Štatistiky podľa mesiacov
 - ✅ Štatistiky podľa typov mobility
 - ✅ Štatistiky dokumentov
 - ✅ Celkové počty prihlášok a študentov
 
-## 🚀 Inštalácia
+##  Inštalácia
 
 ### Požiadavky
 - Python 3.8 alebo vyšší
@@ -110,7 +110,7 @@ Pri prvom spustení sa automaticky:
 - Vytvoria sa predvolení používatelia (ak databáza je prázdna)
 - Vykoná sa migrácia dát z JSON súborov (ak existujú)
 
-## 📁 Štruktúra projektu
+##  Štruktúra projektu
 
 ```
 erasmus_hub/
@@ -142,7 +142,7 @@ erasmus_hub/
     └── uploads/               # Nahrané súbory
 ```
 
-## 💻 Použitie
+##  Použitie
 
 ### Predvolení používatelia
 
@@ -156,7 +156,7 @@ Po prvom spustení sú k dispozícii tieto účty:
 - Email: `admin@example.com`
 - Heslo: `admin`
 
-⚠️ **Dôležité:** V produkčnom prostredí zmeňte tieto predvolené údaje!
+ **Dôležité:** V produkčnom prostredí zmeňte tieto predvolené údaje!
 
 ### Typy dokumentov
 
@@ -182,7 +182,7 @@ Aplikácia podporuje 7 typov povinných dokumentov:
 - **Schválený** - Dokument bol schválený
 - **Zamietnutý** - Dokument bol zamietnutý
 
-## 🔧 Technológie
+##  Technológie
 
 - **Flask 3.0.3** - Webový framework
 - **SQLite** - Databázový systém
@@ -190,7 +190,7 @@ Aplikácia podporuje 7 typov povinných dokumentov:
 - **Werkzeug** - Bezpečnosť (hashovanie hesiel)
 - **Jinja2** - Šablónovací systém
 
-## 🛣️ API a smerovanie
+##  API a smerovanie
 
 ### Verejné trasy
 - `GET /` - Hlavná stránka
@@ -224,7 +224,7 @@ Aplikácia podporuje 7 typov povinných dokumentov:
 ### Všeobecné trasy
 - `GET /download/<filename>` - Sťahovanie súboru
 
-## 🔒 Bezpečnosť
+##  Bezpečnosť
 
 ### Implementované bezpečnostné opatrenia:
 - ✅ Hashovanie hesiel pomocou PBKDF2
@@ -241,18 +241,18 @@ Aplikácia podporuje 7 typov povinných dokumentov:
 - Pravidelne aktualizujte závislosti
 - Použite environment premenné pre citlivé údaje
 
-## 📝 Poznámky
+##  Poznámky
 
 - Databáza sa vytvorí automaticky pri prvom spustení
 - Súbory sa ukladajú do `static/uploads/`
 - Automatická migrácia z JSON súborov sa vykoná pri štarte (ak existujú)
 - Všetky časové značky sú v UTC
 
-## 🤝 Podpora
+##  Podpora
 
 Pre otázky alebo problémy vytvorte issue v repozitári projektu.
 
-## 📄 Licencia
+##  Licencia
 
 Tento projekt je vytvorený pre vzdelávacie účely.
 
